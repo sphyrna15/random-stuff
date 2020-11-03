@@ -80,19 +80,16 @@ A1 = np.array([19.0, 19.35, 19.80, 21.1, 22.75,  23.66, 23.85])
 A2 = np.array([276.5, 275.5, 274.98, 273.0, 271.25, 269.5, 269.0])
 
 delta = 0.5*((360.0 - A2) + A1)
+delta_rad = np.radians(delta)
+phi_rad = np.radians(phi)
 
-nu = np.sin((delta + phi)/2) / np.sin(phi/2)
+nu = np.sin((delta_rad + phi_rad)/2) / np.sin(phi_rad/2)
 
 
 f = lambda x : 1 / (x**2 - 1)
 
-A, v0 = np.linalg.lstsq(freq, nu)
-
-line = (1/A) * (v0**2 - freq**2)
-
 plt.figure()
-plt.plot(freq, f(nu), '-o', label='$f(v)$')
-plt.plot(freq, line, '-o', label='$f(v)$')
+plt.plot(freq, f(nu), 'o', label='$f(v)$')
 plt.xlabel('Frequencies $\nu$')
 plt.ylabel('Function of refractive indices $n$')
 plt.title('Graphic determination of A and $v_0$')
