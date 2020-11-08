@@ -75,7 +75,7 @@ phi = beta - 180
 print('refraction angle phi = ' + str(phi))
 
 colors = np.array(['red', 'yellow', 'green', 'bluegreen', 'indigo', 'purple1', 'purple2'])
-freq = np.array([623.4, 579.1, 546.1, 491.6, 435.8, 407.8, 404.7])
+wavelength = np.array([623.4, 579.1, 546.1, 491.6, 435.8, 407.8, 404.7])
 A1 = np.array([19.0, 19.35, 19.80, 21.1, 22.75,  23.66, 23.85])
 A2 = np.array([276.5, 275.5, 274.98, 273.0, 271.25, 269.5, 269.0])
 
@@ -83,16 +83,25 @@ delta = 0.5*((360.0 - A2) + A1)
 delta_rad = np.radians(delta)
 phi_rad = np.radians(phi)
 
-nu = np.sin((delta_rad + phi_rad)/2) / np.sin(phi_rad/2)
-
+ns = np.sin((delta_rad + phi_rad)/2) / np.sin(phi_rad/2)
+nu = 2.99e8 / wavelength
 
 f = lambda x : 1 / (x**2 - 1)
 
+fns = f(ns)
+
+model, residuals, _, _, _ = np.polyfit(nu**2, f(ns), 1, full=True)
+
 plt.figure()
-plt.plot(freq, f(nu), 'o', label='$f(v)$')
-plt.xlabel('Frequencies $\nu$')
+
+for i in range(len(colors)):
+    plt.text(nu[i]**2, f(ns)[i], '  ' + colors[i])
+
+plt.plot(nu**2, f(ns), 'o', label=r'$f(n(\nu))$')
+plt.plot(nu**2, model[0]*nu**2 + model[1], 'k--', label='LeastSquares Solution')
+plt.xlabel(r'Frequencies squared $\nu^2$')
 plt.ylabel('Function of refractive indices $n$')
-plt.title('Graphic determination of A and $v_0$')
+plt.title('Plotting the Dispersion formula')
 plt.legend()
 plt.grid()
 plt.show()
