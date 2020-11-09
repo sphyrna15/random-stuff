@@ -77,10 +77,10 @@ theta2 = mass_12 * radius**2 * (9.81*time_12**2 / (2*height_12) - 1)
 # Aufgabe 2
 
 Omega_ccw = 2 * np.pi / (time2_ccw / N_ccw)
-omega_ccw = 2 * np.pi / (time2_ccw / N_ccw)
+omega_ccw = 2 * np.pi / (time2_ccw / n_ccw)
 
 Omega_cw = 2 * np.pi / (time2_cw / N_cw)
-omega_cw = 2 * np.pi / (time2_cw / N_cw)
+omega_cw = 2 * np.pi / (time2_cw / n_cw)
 
 err_ccw1 = Omega_ccw - (mass2_ccw * l) / (np.average(theta1) * omega_ccw)
 err_ccw2 = Omega_ccw - (mass2_ccw * l) / (np.average(theta2) * omega_ccw) 
