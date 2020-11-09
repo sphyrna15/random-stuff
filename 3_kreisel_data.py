@@ -42,7 +42,7 @@ time_12 = np.array([2.41, 2.38, 2.35, 2.34, 1.66, 1.72, 1.66, 1.66, 1.43,
 
 # Aufgabe 2
 
-mass_2_ccw = np.array([500, 500, 500, 200, 200, 200, 200, 1000, 1000])
+mass2_ccw = np.array([500, 500, 500, 200, 200, 200, 200, 1000, 1000])
 mass2_cw = np.array([1000, 1000, 1000, 100, 100, 200, 500, 500, 100, 100, 100])
 
 n_ccw = np.array([73, 22, 76, 45, 20, 46, 43, 39, 42])
@@ -55,6 +55,8 @@ time2_cw = np.array([24.13, 22.28, 16.5, 46.19, 33.34, 33.12,
                       36.31, 19.03, 29.47, 21.72, 24.84])
 time2_ccw = np.array([35.56, 19.94, 36.42, 26.09, 25.00, 
                       26.50, 25.19, 21.85, 22.37])
+
+l = 36.5
 
 
 
@@ -71,5 +73,31 @@ theta1 = 2 * mass_11 * 9.81 * height_11 / omega**2 - mass_11*radius**2
 
 theta2 = mass_12 * radius**2 * (9.81*time_12**2 / (2*height_12) - 1)
 
+
+# Aufgabe 2
+
+Omega_ccw = 2 * np.pi / (time2_ccw / N_ccw)
+omega_ccw = 2 * np.pi / (time2_ccw / N_ccw)
+
+Omega_cw = 2 * np.pi / (time2_cw / N_cw)
+omega_cw = 2 * np.pi / (time2_cw / N_cw)
+
+err_ccw1 = Omega_ccw - (mass2_ccw * l) / (np.average(theta1) * omega_ccw)
+err_ccw2 = Omega_ccw - (mass2_ccw * l) / (np.average(theta2) * omega_ccw) 
+
+err_cw1 = Omega_cw - (mass2_cw * l) / (np.average(theta1) * omega_cw)
+err_cw2 = Omega_cw - (mass2_cw * l) / (np.average(theta2) * omega_cw) 
+
+print('---' * 20)
+print()
+print('Average error ccw for theta1: ' + str(np.average(err_ccw1)))
+print()
+print('Average error ccw for theta2: ' + str(np.average(err_ccw2)))
+print()
+print('Average error cw for theta1: ' + str(np.average(err_cw1)))
+print()
+print('Average error cw for theta2: ' + str(np.average(err_cw2)))
+print()
+print('---' * 20)
 
 
