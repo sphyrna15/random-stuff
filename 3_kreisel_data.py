@@ -81,17 +81,27 @@ omega_ccw = 2 * np.pi / (time2_ccw / n_ccw)
 Omega_cw = 2 * np.pi / (time2_cw / N_cw)
 omega_cw = 2 * np.pi / (time2_cw / n_cw)
 
-err_ccw1 = abs(Omega_ccw - (mass2_ccw * 9.81 * l) / (np.average(theta1) * omega_ccw))
-err_ccw2 = abs(Omega_ccw - (mass2_ccw * 9.81 * l) / (np.average(theta2) * omega_ccw))
+err_ccw1 = Omega_ccw - (mass2_ccw * 9.81 * l) / (np.average(theta1) * omega_ccw)
+err_ccw2 = Omega_ccw - (mass2_ccw * 9.81 * l) / (np.average(theta2) * omega_ccw)
 
-err_cw1 = abs(Omega_cw - (mass2_cw * 9.81 * l) / (np.average(theta1) * omega_cw))
-err_cw2 = abs(Omega_cw - (mass2_cw * 9.81 * l) / (np.average(theta2) * omega_cw))
+err_cw1 = Omega_cw - (mass2_cw * 9.81 * l) / (np.average(theta1) * omega_cw)
+err_cw2 = Omega_cw - (mass2_cw * 9.81 * l) / (np.average(theta2) * omega_cw)
+
+
+theta_tot = np.concatenate((theta1, theta2))
+
+err_totcw = Omega_cw - (mass2_cw * 9.81 * l) / (np.average(theta_tot) * omega_cw)
+err_totccw = Omega_ccw - (mass2_ccw * 9.81 * l) / (np.average(theta_tot) * omega_ccw)
+
+err_tot = np.concatenate((err_totcw, err_totccw))
 
 print('---' * 20)
 print()
 print('The aveagre Moment of Inertia theta1: ' + str(np.average(theta1)))
 print()
 print('The average Moment of Inertia theta2: ' + str(np.average(theta2)))
+print()
+print('The aveagre Moment of Inertia total: ' + str(np.average(theta_tot)))
 print()
 print('Variance of theta1: ' + str(np.var(theta1)))
 print()
@@ -109,6 +119,10 @@ print()
 print('Average error cw for theta1: ' + str(np.average(err_cw1)))
 print()
 print('Average error cw for theta2: ' + str(np.average(err_cw2)))
+print()
+print('Average total deviation: ' + str(np.average(err_tot)))
+print()
+print('Average total standard deviation: ' + str(np.std(err_tot)))
 print()
 print('---' * 20)
 
@@ -128,8 +142,8 @@ plt.figure()
 plt.plot(mass_11, theta1, 'go', label='Method 1 results for theta')
 plt.plot([0,1], [np.average(theta1), np.average(theta1)], 'k--', label='Method 1 average value for theta')
 plt.plot([0,1], [np.average(theta2), np.average(theta2)], 'r--', label='Method 2 average value for theta')
-plt.plot([0,1], [topline1, topline1], 'b--', label='Average + 1STD method 1')
-plt.plot([0,1], [btmline1, btmline1], 'b--', label='Avergae - 1STD method 1')
+plt.plot([0,1], [topline1, topline1], 'b--', label='Average $\pm$ 1STD method 1')
+plt.plot([0,1], [btmline1, btmline1], 'b--')
 
 plt.xlabel('Mass in kg')
 plt.ylabel('Moment of Inertia in $kgm^2$')
@@ -143,14 +157,35 @@ plt.figure()
 plt.plot(mass_12, theta2, 'go', label='Method 1 results for theta')
 plt.plot([0,1], [np.average(theta2), np.average(theta2)], 'k--', label='Method 2 average value for theta')
 plt.plot([0,1], [np.average(theta1), np.average(theta1)], 'r--', label='Method 1 average value for theta')
-plt.plot([0,1], [topline2, topline2], 'b--', label='Average + 1STD method 2')
-plt.plot([0,1], [btmline2, btmline2], 'b--', label='Avergae - 1STD method 2')
+plt.plot([0,1], [topline2, topline2], 'b--', label='Average $\pm$ 1STD method 2')
+plt.plot([0,1], [btmline2, btmline2], 'b--')
 
 plt.xlabel('Mass in kg')
 plt.ylabel('Moment of Inertia in $kgm^2$')
 plt.title('Method 2 Results for Moment of Inertia')
 plt.legend()
 plt.grid()
+plt.show()
+
+
+# Raw Data for the Precession movements
+
+param = np.polyfit(mass2_ccw, Omega_ccw, 1)
+param2 = np.polyfit(mass2_cw, Omega_cw, 1)
+massfit = np.arange(0, 1.1, 0.1)
+
+plt.figure()
+
+plt.plot(mass2_ccw, Omega_ccw, 'bo', label='Counterclockwise Precession Movement.')
+plt.plot(mass2_cw, Omega_cw, 'ro', label='Clockwise Precession Movement')
+plt.plot(massfit, param[0]*massfit + param[1], 'b--', label='Linear Fit of the CCW Movement')
+plt.plot(massfit, param2[0]*massfit + param2[1], 'r--', label='Linear Fit of the CCW Movement')
+
+plt.xlabel('Mass in kg')
+plt.ylabel('Angular Precession Velocity in ...')
+plt.title('Precession Velocity in Relation to Mass')
+plt.grid()
+plt.legend()
 plt.show()
 
 
