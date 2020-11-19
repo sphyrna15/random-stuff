@@ -131,7 +131,8 @@ DTwat = Twat - T1wat
 T1alu = Talu[idxalu[0]]
 DTalu = Talu - T1alu
 
-DTcop = Tcop - Tcop[idxcop[0]]
+T1cop = Tcop[idxcop[0]]
+DTcop = Tcop - T1cop
 
 Fwat = np.trapz(DTwat[idxwat[0]:idxwat[-1]], x = twat[idxwat[0]:idxwat[-1]])
 Falu = np.trapz(DTalu[idxalu[0]:idxalu[-1]], x = t[idxalu[0]:idxalu[-1]])
@@ -148,7 +149,7 @@ dtidx = 100 #Index fit range
 
 f = lambda x, a, b : a*x + b
 params_wat, _ = curve_fit(f, twat[idxwat[-1]:], 
-                          DTwat[idxwat[-1]])
+                          DTwat[idxwat[-1]:])
 
 params_alu, _ = curve_fit(f, t[idxalu[-1]:], 
                           DTalu[idxalu[-1]:])
@@ -160,11 +161,15 @@ paramcop = np.polyfit(t[idxcop[0]:idxcop[-1]], DTcop[idxcop[0]:idxcop[-1]],deg=1
 
 
 plt.figure()
-plt.plot(t, DTcop, color='tab:green')
+plt.plot(t, DTcop, color='tab:green', label = 'Temperature')
+plt.plot(t, Pcop, 'r-', label='Power')
 plt.plot(t[idxcop[0]], DTcop[idxcop[0]], 'bo')
 plt.plot(t[idxcop[-1]], DTcop[idxcop[0-1]], 'ko')
-plt.plot(t, f(t, params_cop[0], params_cop[1]), 'k--')
-plt.title('Linear Fit to the change in Temerature of Copper')
+plt.plot(t, f(t, params_cop[0], params_cop[1]), 'k--', label='Linear Fit to Temperature loss')
+plt.title('Time Developement to Temperatuer and Power')
+plt.xlabel('Time')
+plt.ylabel('Power P and Temperature T')
+plt.legend()
 plt.grid()
 
 
@@ -199,8 +204,8 @@ Ctwat = (dQwat * dTwat) / (dTwat**2 - Tdotwat*Fwat)
 Ctalu = (dQalu * dTalu) / (dTalu**2 - Tdotalu*Falu)  -  Ctwat
 Ctcop = (dQcop * dTcop) / (dTcop**2 - Tdotcop*Falu)  -  Ctwat
 
-CMcop = Ctcop * (1500/63.546)
-CMalu = Ctalu * (480/26.9815395)
+CMcop = Ctcop * (63.546/1500)
+CMalu = Ctalu * (26.9815395/475)
 
 print()
 print('Ctot for water: ' + str(Ctwat))
