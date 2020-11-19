@@ -147,20 +147,24 @@ print('Integral Fcop: ' +str(Fcop))
 dtidx = 100 #Index fit range
 
 f = lambda x, a, b : a*x + b
-params_wat, _ = curve_fit(f, twat[idxwat[300]-dtidx:idxwat[300]+dtidx], 
-                          DTwat[idxwat[300]-dtidx:idxwat[300]+dtidx])
+params_wat, _ = curve_fit(f, twat[idxwat[-1]:], 
+                          DTwat[idxwat[-1]])
 
-params_alu, _ = curve_fit(f, t[idxalu[300]-dtidx:idxalu[300]+dtidx], 
-                          DTalu[idxalu[300]-dtidx:idxalu[300]+dtidx])
+params_alu, _ = curve_fit(f, t[idxalu[-1]:], 
+                          DTalu[idxalu[-1]:])
 
-params_cop, _ = curve_fit(f, t[idxcop[300]-dtidx:idxcop[300]+dtidx], 
-                          DTalu[idxcop[300]-dtidx:idxcop[300]+dtidx])
+params_cop, _ = curve_fit(f, t[idxcop[-1]:], 
+                          DTcop[idxcop[-1]:])
+
+paramcop = np.polyfit(t[idxcop[0]:idxcop[-1]], DTcop[idxcop[0]:idxcop[-1]],deg=1)
+
 
 plt.figure()
 plt.plot(t, DTcop, color='tab:green')
 plt.plot(t[idxcop[0]], DTcop[idxcop[0]], 'bo')
 plt.plot(t[idxcop[-1]], DTcop[idxcop[0-1]], 'ko')
 plt.plot(t, f(t, params_cop[0], params_cop[1]), 'k--')
+plt.title('Linear Fit to the change in Temerature of Copper')
 plt.grid()
 
 
@@ -181,19 +185,19 @@ dTwat = Twat[idxwat[-1]] - Twat[idxwat[0]]
 dTalu = Talu[idxalu[-1]] - Talu[idxalu[0]]
 dTcop = Tcop[idxcop[-1]] - Tcop[idxcop[0]]
 
-Vshwat = np.average(Vres_wat[idxwat[0]:idxwat[-1]])
-Vwat = np.average(V_wat[idxwat[0]:idxwat[-1]])
+# Vshwat = np.average(Vres_wat[idxwat[0]:idxwat[-1]])
+# Vwat = np.average(V_wat[idxwat[0]:idxwat[-1]])
 
-Vshalu = np.average(Vres_alu[idxalu[0]:idxalu[-1]])
-Valu = np.average(V_alu[idxalu[0]:idxalu[-1]])
+# Vshalu = np.average(Vres_alu[idxalu[0]:idxalu[-1]])
+# Valu = np.average(V_alu[idxalu[0]:idxalu[-1]])
 
-Vshcop = np.average(Vres_cop[idxcop[0]:idxcop[-1]])
-Vcop = np.average(V_cop[idxcop[0]:idxcop[-1]])
+# Vshcop = np.average(Vres_cop[idxcop[0]:idxcop[-1]])
+# Vcop = np.average(V_cop[idxcop[0]:idxcop[-1]])
 
-Ctwat = (Vshwat * Vwat * dtw * dTwat) / (dTwat**2 - Tdotwat*Fwat)
+Ctwat = (dQwat * dTwat) / (dTwat**2 - Tdotwat*Fwat)
 
-Ctalu = (Vshalu * Valu * dta * dTalu) / (dTalu**2 - Tdotalu*Falu)  -  Ctwat
-Ctcop = (Vshcop * Vcop * dtc * dTcop) / (dTcop**2 - Tdotcop*Falu)  -  Ctwat
+Ctalu = (dQalu * dTalu) / (dTalu**2 - Tdotalu*Falu)  -  Ctwat
+Ctcop = (dQcop * dTcop) / (dTcop**2 - Tdotcop*Falu)  -  Ctwat
 
 CMcop = Ctcop * (1500/63.546)
 CMalu = Ctalu * (480/26.9815395)
