@@ -8,6 +8,7 @@ Created on Fri Nov 13 14:14:18 2020
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 
 ################### 84 SPECIFIC HEAT DATA ANALYSIS #################################
 
@@ -95,5 +96,116 @@ ap[1].plot(t, Tcop, label = 'copper')
 ap[1].set(xlabel = 'Time in seconds', ylabel='Temperature in $^o$C')
 ap[1].legend()
 ap[1].grid()
+
+
+#Get the start and end Time of the Power applied Indices
+
+idxwat = np.where(Pwat > 2.0)[0]
+idxalu = np.where(Palu > 2.0)[0]
+idxcop= np.where(Pcop > 2.0)[0]
+
+dtw = (idxwat[-1] - idxwat[0]) / 2.5
+dta = idxalu[-1] - idxalu[0]
+dtc = idxcop[-1] - idxcop[0]
+
+dQwater_avg = np.average(Pwat[idxwat[0]:idxwat[-1]])*dtw
+dQwat = np.trapz(Pwat[idxwat[0]:idxwat[-1]], x = twat[idxwat[0]:idxwat[-1]])
+
+print()
+print('Average Heat dQwat: ' +str(dQwater_avg))
+print('Integral actual Heat dQwat: ' + str(dQwat))
+
+dQalu = np.trapz(Palu[idxalu[0]:idxalu[-1]], x = t[idxalu[0]:idxalu[-1]])
+dQcop = np.trapz(Pcop[idxcop[0]:idxcop[-1]], x = t[idxcop[0]:idxcop[-1]])
+
+print('Integral actual Heat dQalu: ' + str(dQalu))
+print('Integral actual Heat dQcop: ' + str(dQcop))
+
+
+#Calculate Integrals for Temperature dependance
+
+
+T1wat = Twat[idxwat[0]]
+DTwat = Twat - T1wat
+
+T1alu = Talu[idxalu[0]]
+DTalu = Talu - T1alu
+
+DTcop = Tcop - Tcop[idxcop[0]]
+
+Fwat = np.trapz(DTwat[idxwat[0]:idxwat[-1]], x = twat[idxwat[0]:idxwat[-1]])
+Falu = np.trapz(DTalu[idxalu[0]:idxalu[-1]], x = t[idxalu[0]:idxalu[-1]])
+Fcop = np.trapz(DTcop[idxcop[0]:idxcop[-1]], x = t[idxcop[0]:idxcop[-1]])
+
+print()
+print('Integral Fwat: ' +str(Fwat))
+print('Integral Falu: ' +str(Falu))
+print('Integral Fcop: ' +str(Fcop))
+
+# Calculate derivatives Tdot
+
+dtidx = 100 #Index fit range
+
+f = lambda x, a, b : a*x + b
+params_wat, _ = curve_fit(f, twat[idxwat[300]-dtidx:idxwat[300]+dtidx], 
+                          DTwat[idxwat[300]-dtidx:idxwat[300]+dtidx])
+
+params_alu, _ = curve_fit(f, t[idxalu[300]-dtidx:idxalu[300]+dtidx], 
+                          DTalu[idxalu[300]-dtidx:idxalu[300]+dtidx])
+
+params_cop, _ = curve_fit(f, t[idxcop[300]-dtidx:idxcop[300]+dtidx], 
+                          DTalu[idxcop[300]-dtidx:idxcop[300]+dtidx])
+
+plt.figure()
+plt.plot(t, DTcop, color='tab:green')
+plt.plot(t[idxcop[0]], DTcop[idxcop[0]], 'bo')
+plt.plot(t[idxcop[-1]], DTcop[idxcop[0-1]], 'ko')
+plt.plot(t, f(t, params_cop[0], params_cop[1]), 'k--')
+plt.grid()
+
+
+
+Tdotwat = params_wat[0]
+Tdotalu = params_alu[0]
+Tdotcop = params_cop[0]
+
+print()
+print('Gradient Tdotwat: ' + str(Tdotwat))
+print('Gradient Tdotalu: ' + str(Tdotalu))
+print('Gradient Tdotcop: ' + str(Tdotcop))
+
+
+# NOW EVALUATE FORMULA
+
+dTwat = Twat[idxwat[-1]] - Twat[idxwat[0]]
+dTalu = Talu[idxalu[-1]] - Talu[idxalu[0]]
+dTcop = Tcop[idxcop[-1]] - Tcop[idxcop[0]]
+
+Vshwat = np.average(Vres_wat[idxwat[0]:idxwat[-1]])
+Vwat = np.average(V_wat[idxwat[0]:idxwat[-1]])
+
+Vshalu = np.average(Vres_alu[idxalu[0]:idxalu[-1]])
+Valu = np.average(V_alu[idxalu[0]:idxalu[-1]])
+
+Vshcop = np.average(Vres_cop[idxcop[0]:idxcop[-1]])
+Vcop = np.average(V_cop[idxcop[0]:idxcop[-1]])
+
+Ctwat = (Vshwat * Vwat * dtw * dTwat) / (dTwat**2 - Tdotwat*Fwat)
+
+Ctalu = (Vshalu * Valu * dta * dTalu) / (dTalu**2 - Tdotalu*Falu)  -  Ctwat
+Ctcop = (Vshcop * Vcop * dtc * dTcop) / (dTcop**2 - Tdotcop*Falu)  -  Ctwat
+
+CMcop = Ctcop * (1500/63.546)
+CMalu = Ctalu * (480/26.9815395)
+
+print()
+print('Ctot for water: ' + str(Ctwat))
+print('Ctot for aluminium: ' + str(Ctalu))
+print('Ctot for copper: ' + str(Ctcop))
+
+print()
+print('CM for aluminium: ' + str(CMalu))
+print('CM for copper: ' + str(CMcop))
+
 
 
