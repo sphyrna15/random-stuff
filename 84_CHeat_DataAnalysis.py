@@ -202,7 +202,7 @@ dTcop = Tcop[idxcop[-1]] - Tcop[idxcop[0]]
 Ctwat = (dQwat * dTwat) / (dTwat**2 - Tdotwat*Fwat)
 
 Ctalu = (dQalu * dTalu) / (dTalu**2 - Tdotalu*Falu)  -  Ctwat
-Ctcop = (dQcop * dTcop) / (dTcop**2 - Tdotcop*Falu)  -  Ctwat
+Ctcop = (dQcop * dTcop) / (dTcop**2 - Tdotcop*Fcop)  -  Ctwat
 
 CMcop = Ctcop * (63.546/1500)
 CMalu = Ctalu * (26.9815395/475)
