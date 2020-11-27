@@ -18,17 +18,17 @@ watertxt = np.loadtxt(r'Data/water.txt')
 coppertxt = np.loadtxt(r'Data/aluminium.txt')
 aluminiumtxt = np.loadtxt(r'Data/copper.txt')
 
-V_wat = watertxt[:,0] * 10 #10x since a voltage divider reduces V prior to measurement
-Vres_wat = watertxt[:,1]
-Vbr_wat = watertxt[:,2]
+V_wat = watertxt[:,0]  #10x since a voltage divider reduces V prior to measurement
+Vres_wat = watertxt[:,1] * 10 
+Vbr_wat = watertxt[:,2] 
 
-V_cop = coppertxt[:,0] * 10 #10x since a voltage divider reduces V prior to measurement
-Vres_cop = coppertxt[:,1]
-Vbr_cop = coppertxt[:,2]
+V_cop = coppertxt[:,0] #10x since a voltage divider reduces V prior to measurement
+Vres_cop = coppertxt[:,1] * 10 
+Vbr_cop = coppertxt[:,2] 
 
-V_alu = aluminiumtxt[:,0] * 10 #10x since a voltage divider reduces V prior to measurement
-Vres_alu = aluminiumtxt[:,1]
-Vbr_alu = aluminiumtxt[:,2]
+V_alu = aluminiumtxt[:,0]  #10x since a voltage divider reduces V prior to measurement
+Vres_alu = aluminiumtxt[:,1] * 10 
+Vbr_alu = aluminiumtxt[:,2] 
 
 
 # Calculate time vectors for the measurements
@@ -108,12 +108,15 @@ dtw = (idxwat[-1] - idxwat[0]) / 2.5
 dta = idxalu[-1] - idxalu[0]
 dtc = idxcop[-1] - idxcop[0]
 
-dQwater_avg = np.average(Pwat[idxwat[0]:idxwat[-1]])*dtw
+dQwat2 = np.average(Pwat[idxwat[0]:idxwat[-1]]) * dtw
 dQwat = np.trapz(Pwat[idxwat[0]:idxwat[-1]], x = twat[idxwat[0]:idxwat[-1]])
 
 print()
-print('Average Heat dQwat: ' +str(dQwater_avg))
+print('Average Heat dQwat: ' +str(dQwat2))
 print('Integral actual Heat dQwat: ' + str(dQwat))
+
+dQalu2 = np.average(Palu[idxalu[0]:idxalu[-1]]) * dta
+dQcop2 = np.average(Pcop[idxcop[0]:idxcop[-1]]) * dtc
 
 dQalu = np.trapz(Palu[idxalu[0]:idxalu[-1]], x = t[idxalu[0]:idxalu[-1]])
 dQcop = np.trapz(Pcop[idxcop[0]:idxcop[-1]], x = t[idxcop[0]:idxcop[-1]])
@@ -138,10 +141,14 @@ Fwat = np.trapz(DTwat[idxwat[0]:idxwat[-1]], x = twat[idxwat[0]:idxwat[-1]])
 Falu = np.trapz(DTalu[idxalu[0]:idxalu[-1]], x = t[idxalu[0]:idxalu[-1]])
 Fcop = np.trapz(DTcop[idxcop[0]:idxcop[-1]], x = t[idxcop[0]:idxcop[-1]])
 
+Fwat2 = (Twat[idxwat[-1]] - T1wat) * dtw * 2.5
+Falu2 = (np.max(Talu) - np.min(Talu)) * dta
+Fcop2 = (np.max(Tcop) - np.min(Tcop)) * dtc
+
 print()
-print('Integral Fwat: ' +str(Fwat))
-print('Integral Falu: ' +str(Falu))
-print('Integral Fcop: ' +str(Fcop))
+print('Integral Fwat: ' +str(Fwat2))
+print('Integral Falu: ' +str(Falu2))
+print('Integral Fcop: ' +str(Fcop2))
 
 # Calculate derivatives Tdot
 
@@ -186,26 +193,45 @@ print('Gradient Tdotcop: ' + str(Tdotcop))
 
 # NOW EVALUATE FORMULA
 
-dTwat = Twat[idxwat[-1]] - Twat[idxwat[0]]
-dTalu = Talu[idxalu[-1]] - Talu[idxalu[0]]
-dTcop = Tcop[idxcop[-1]] - Tcop[idxcop[0]]
+dTwat = np.max(Twat) - np.min(Twat)
+dTalu = np.max(Talu) - np.min(Talu)
+dTcop = np.max(Tcop) - np.min(Tcop)
 
-# Vshwat = np.average(Vres_wat[idxwat[0]:idxwat[-1]])
-# Vwat = np.average(V_wat[idxwat[0]:idxwat[-1]])
+Vshwat = np.average(Vres_wat[idxwat[0]:idxwat[-1]])
+Vwat = np.average(V_wat[idxwat[0]:idxwat[-1]])
 
-# Vshalu = np.average(Vres_alu[idxalu[0]:idxalu[-1]])
-# Valu = np.average(V_alu[idxalu[0]:idxalu[-1]])
+Vshalu = np.average(Vres_alu[idxalu[0]:idxalu[-1]])
+Valu = np.average(V_alu[idxalu[0]:idxalu[-1]])
 
-# Vshcop = np.average(Vres_cop[idxcop[0]:idxcop[-1]])
-# Vcop = np.average(V_cop[idxcop[0]:idxcop[-1]])
+Vshcop = np.average(Vres_cop[idxcop[0]:idxcop[-1]])
+Vcop = np.average(V_cop[idxcop[0]:idxcop[-1]])
 
-Ctwat = (dQwat * dTwat) / (dTwat**2 - Tdotwat*Fwat)
 
-Ctalu = (dQalu * dTalu) / (dTalu**2 - Tdotalu*Falu)  -  Ctwat
-Ctcop = (dQcop * dTcop) / (dTcop**2 - Tdotcop*Fcop)  -  Ctwat
+# SEE IPYNB Notebook for calculation
+
+Fwat3 = 5.7e+03
+dQwat3 = 5465.14
+Tdotwat3 = -3.77e-03
+dTwat3 = 11.746280014075463
+
+dQalu3 = 13567.20
+Falu3 = 13381.97
+Tdotalu3 = -2.05e-03
+dTalu3 = 13.250847369319043
+
+dQcop3 = 13355.97
+Fcop3 = 10927.38
+Tdotcop3 = -1.46e-03
+dTcop3 = 11.1072886773499
+
+Ctwat = (dQwat3 * dTwat3) / (dTwat3**2 - Tdotwat3 * Fwat3)
+
+Ctalu = (dQalu3 * dTalu3) / (dTalu3**2 - Tdotalu3 * Falu3)  -  Ctwat
+Ctcop = (dQcop3 * dTcop3) / (dTcop3**2 - Tdotcop3 * Fcop3)  -  Ctwat
 
 CMcop = Ctcop * (63.546/1500)
-CMalu = Ctalu * (26.9815395/475)
+CMalu = Ctalu * (26.9815395/480)
+CMwat = Ctwat * (18.01528/45)
 
 print()
 print('Ctot for water: ' + str(Ctwat))
@@ -215,6 +241,7 @@ print('Ctot for copper: ' + str(Ctcop))
 print()
 print('CM for aluminium: ' + str(CMalu))
 print('CM for copper: ' + str(CMcop))
+print('CM for water: ' + str(CMwat))
 
 
 
