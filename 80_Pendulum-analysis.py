@@ -70,7 +70,6 @@ def fit(time, data, func = func2):
 ################## JUST FIT TURNING POINTS TO DECAY FUNCTION
 
 # Find turning points of the function
-
 def find_turns(data, tol):  # Input data and Index Tolerance
     i = 1
     turns = []
@@ -84,22 +83,48 @@ def find_turns(data, tol):  # Input data and Index Tolerance
         i += 1
     return np.array(turns), np.array(indices)
 
-max665, idx665 = find_turns(raw665_3[:,3], 4)
-t = np.linspace(0, 15, len(max665))
-Amax665 = np.max(max665)
+# Get the time values for the turning points from the indices
+def get_times(time_data, indices):
+    
+    times = []
+    for idx in indices:
+        times.append(time_data[idx])
+    
+    return np.array(times)
 
-decay = lambda t, gamma : Amax665 * np.exp(-gamma * t)
 
-params, _ = curve_fit(decay, t, max665)
-
-plt.figure()
-plt.plot(t, max665, 'b-')
-plt.plot(t, decay(t, params), 'k--')
-plt.grid()
-plt.show()
+# Function to fully calculate the decay coeff. gamma and plot the decay
+def calculate_gamma(data, time_data, tol, plot = True):
+    
+    extrema, indices = find_turns(data, tol)
+    time = get_times(time_data, indices) # Not sure yet how to structure time
+    t0 = time[0] ; t = time - t0
+    # t = np.linspace(0, 10, len(extrema))
+    Amax = np.max(extrema)
+    
+    decay = lambda t, gamma : Amax * np.exp(-gamma * t)
+    
+    gamma_value, _ = curve_fit(decay, t, extrema)
+    
+    if plot != True: 
+        return gamma_value[0], extrema, indices, time
+    
+    plt.figure()
+    plt.plot(t, extrema, 'b-', label='Extrema')
+    plt.plot(t, decay(t, gamma_value[0]), 'k--', label='Fitted Decay Function')
+    plt.title('Decay of Turning Points of the Oscillation')
+    plt.xlabel('Time $t$ (s)')
+    plt.ylabel('Amplitude')
+    plt.legend()
+    plt.grid()
+    plt.show()
+    
+    return gamma_value[0], extrema, indices, time
+    
+gamma665, ex665, idx665, t665 = calculate_gamma(raw665_3[:,3], raw665_3[:,0], 10)
 
 print()
-print('Value for Gamma is: ' + str(params[0]))
+print('Value for Gamma is: ' + str(gamma665))
 print()
 
 # PLOT DATA
@@ -145,6 +170,7 @@ a3[1].grid()
 a3[2].plot(raw665_3[:,0], raw665_3[:,3], 'g-', label='z')
 # a3[2].plot(t[0], res[0], 'bo', label='origin point')
 # a3[2].plot(t, f(t, *params), 'k--', label='fit')
+plt.plot(t665, get_times(raw665_3[:,3], idx665), 'bo', label='extrema')
 a3[2].legend()
 a3[2].grid()
 
