@@ -101,9 +101,8 @@ def get_times(time_data, indices):
 def calculate_gamma(data, time_data, tol, plot = True, title = 'Title'):
     
     extrema, indices = find_turns(data, tol)
-    time = get_times(time_data, indices) # Not sure yet how to structure time
+    time = get_times(time_data, indices) #set first data point to zero to avoid phase shift
     t0 = time[0] ; t = time - t0
-    # t = np.linspace(0, 10, len(extrema))
     Amax = np.max(extrema)
     
     decay = lambda t, gamma : Amax * np.exp(-gamma * t)
@@ -128,15 +127,17 @@ def calculate_gamma(data, time_data, tol, plot = True, title = 'Title'):
 
 ########### Calculate Gammas 
 
-gamma665_1, ex765_1, idx665_1, t665_1 = calculate_gamma(raw665_1[:,1], raw665_1[:,0], 10, 
+##### Length 665 mm
+gamma665_1, ex665_1, idx665_1, t665_1 = calculate_gamma(raw665_1[:,1], raw665_1[:,0], 10, 
                                                         title = 'L-665 1', plot=False)
 
-gamma665_2, ex765_2, idx665_2, t665_2 = calculate_gamma(raw665_2[:,1], raw665_2[:,0], 10, 
+gamma665_2, ex665_2, idx665_2, t665_2 = calculate_gamma(raw665_2[:,1], raw665_2[:,0], 10, 
                                                         title = 'L-665 2', plot=False)
 
 gamma665_3, ex665_3, idx665_3, t665_3 = calculate_gamma(raw665_3[:,3], raw665_3[:,0], 10,
                                                         title = 'L-690 3', plot=False)
 
+##### Length 760 mm
 gamma760_1, ex760_1, idx760_1, t760_1 = calculate_gamma(raw760_1[:,1], raw760_1[:,0], 10, 
                                                         title = 'L-760 1', plot=False)
 
@@ -146,13 +147,14 @@ gamma760_2, ex760_2, idx760_2, t760_2 = calculate_gamma(raw760_2[:,1], raw760_2[
 gamma760_3, ex760_3, idx760_3, t760_3 = calculate_gamma(raw760_3[:,1], raw760_3[:,0], 10, 
                                                         title = 'L-760 3', plot=False)
 
-gamma690_1, ex760_1, idx690_1, t690_1 = calculate_gamma(raw690_1[:,1], raw690_1[:,0], 10, 
+##### Length 690 mm
+gamma690_1, ex690_1, idx690_1, t690_1 = calculate_gamma(raw690_1[:,1], raw690_1[:,0], 10, 
                                                         title = 'L-690 1', plot=False)
 
-gamma690_2, ex760_2, idx690_2, t690_2 = calculate_gamma(raw690_2[:,1], raw690_2[:,0], 10, 
+gamma690_2, ex690_2, idx690_2, t690_2 = calculate_gamma(raw690_2[:,1], raw690_2[:,0], 10, 
                                                         title = 'L-690 2', plot=False)
 
-gamma690_3, ex760_3, idx690_3, t690_3 = calculate_gamma(raw690_3[:,1], raw690_3[:,0], 10, 
+gamma690_3, ex690_3, idx690_3, t690_3 = calculate_gamma(raw690_3[:,1], raw690_3[:,0], 10, 
                                                         title = 'L-690 3', plot=False)
 
 # Print Decay coefficients
