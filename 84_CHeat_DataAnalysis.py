@@ -14,9 +14,9 @@ from scipy.optimize import curve_fit
 
 #Import Data from /Data folder .txt files
 
-watertxt = np.loadtxt(r'Data/water.txt')
-coppertxt = np.loadtxt(r'Data/aluminium.txt')
-aluminiumtxt = np.loadtxt(r'Data/copper.txt')
+watertxt = np.loadtxt(r'Data/Specific_heat-Data/water.txt')
+coppertxt = np.loadtxt(r'Data//Specific_heat-Data/aluminium.txt')
+aluminiumtxt = np.loadtxt(r'Data//Specific_heat-Data/copper.txt')
 
 V_wat = watertxt[:,0]  #10x since a voltage divider reduces V prior to measurement
 Vres_wat = watertxt[:,1] * 10 
@@ -229,7 +229,7 @@ Ctwat = (dQwat3 * dTwat3) / (dTwat3**2 - Tdotwat3 * Fwat3)
 Ctalu = (dQalu3 * dTalu3) / (dTalu3**2 - Tdotalu3 * Falu3)  -  Ctwat
 Ctcop = (dQcop3 * dTcop3) / (dTcop3**2 - Tdotcop3 * Fcop3)  -  Ctwat
 
-CMcop = Ctcop * (63.546/1500)
+CMcop = Ctcop * (63.546/1545)
 CMalu = Ctalu * (26.9815395/480)
 CMwat = Ctwat * (18.01528/45)
 
