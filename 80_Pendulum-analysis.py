@@ -199,17 +199,21 @@ print()
 ############## Length 760 1 and 2
 
 # fp, a1 = plt.subplots(3, 1, sharex=True, figsize=(6,6))
+# fp.suptitle("Raw Data for 760 mm")
 # a1[0].plot(raw760_1[:,0], raw760_1[:,1], 'b-', label='x')
 # a1[0].plot(t760_1, get_times(raw760_1[:,1], idx760_1), 'ro', label='extrema')
 # a1[0].legend()
+# a1[0].set(ylabel='Angular Velocity')
 # a1[0].grid()
 
 # a1[1].plot(raw760_1[:,0], raw760_1[:,2], 'r-', label='y')
 # a1[1].legend()
+# a1[1].set(ylabel='Angular Velocity')
 # a1[1].grid()
 
 # a1[2].plot(raw760_1[:,0], raw760_1[:,3], 'g-', label='z')
 # a1[2].legend()
+# a1[2].set(xlabel='Time (s)', ylabel='Angular Velocity')
 # a1[2].grid()
 
 # fp, a2 = plt.subplots(3, 1, sharex=True, figsize=(6,6))
