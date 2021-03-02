@@ -22,12 +22,12 @@ def getPoints(filename, maxN):
     return points
 
 sp100_n3000_rs1802 = getPoints('01_cluster_mc_rs1802_n3000_p1.00.csv', 3000)
-
+sp050_n5000_rs1802 = getPoints('02_cluster_mc_rs1802_n5000_p0.50.csv', 5000)
 
 
 ##################### Smallest enclosing Circle #################
 
-x, y, radius = sec.make_circle(sp100_n3000_rs1802)
+x, y, radius = sec.make_circle(sp050_n5000_rs1802)
 
 # get the fractal dimension of the cluster and plot process
 def getFractDim_sec(filename, N, plot = True):
@@ -39,11 +39,19 @@ def getFractDim_sec(filename, N, plot = True):
         x, y, radius = sec.make_circle(points)
         radii.append((i, radius))
         i += 100
+        
+    #linear fit to get fractal dimension
+    rad = np.array(radii)
+    rad = rad[1:, :]
+    x = np.log(rad[:,0]) ; y = np.log(rad[:,1])
+    model = np.polyfit(x, y, 1)
     
     if plot:
-        rad = np.array(radii)
         plt.figure()
+        #plt.plot(rad[:,0], rad[:,1])
         plt.plot(np.log(rad[:,0]), np.log(rad[:,1]), label='Data')
+        #plt.loglog(rad[:,0], rad[:,1], label='Data')
+        plt.plot(x, model[0]*x + model[1], label='Log Fit')
         plt.title('LogLog fit to SEC data')
         plt.xlabel("Number of Particles")
         plt.ylabel("Smallest Enclosing Radius")
@@ -51,10 +59,10 @@ def getFractDim_sec(filename, N, plot = True):
         plt.grid()
         plt.show()
     
-    return rad
+    return rad, model
 
-radii = getFractDim_sec('01_cluster_mc_rs1802_n3000_p1.00.csv', 3000)
-
+radii, model = getFractDim_sec('01_cluster_mc_rs1802_n3000_p1.00.csv', 3000)
+rad2, mod2 = getFractDim_sec('02_cluster_mc_rs1802_n5000_p0.50.csv', 5000)
 
 
 
