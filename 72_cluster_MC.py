@@ -236,7 +236,7 @@ def cluster_mc(sp=1.00, Nmax=1000, rs=0):
 
 if __name__ == "__main__":
     t0 = time.time()
-    cluster_mc(sp=1.00, Nmax=3000, rs=1802)
+    cluster_mc(sp=0.5, Nmax=9000, rs=1901)
     t1 = time.time()
     print('Total time (in seconds):', t1-t0)
 
