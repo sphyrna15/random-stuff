@@ -23,7 +23,8 @@ filenames = [] #List of Filenames to import
 filenames.append('1.1_flash1_warm-up.csv')
 filenames.append('1.1_lamp1_warm-up.csv')
 
-example = getData(filenames[0])
+flash_warmup = getData(filenames[0])
+lamp_warmup = getData(filenames[1])
 
 
 # get 20s average of a list of files and put them in 1 numpy array
@@ -35,7 +36,7 @@ def getAverage(files): #files list (filename, radius)
         data = getData(file)
         idx = np.where(data[:,0] <= 20)[0]
         data = data[:idx[-1], :]
-        avg = np.average(data)
+        avg = np.average(data[:,1])
         points.append((r, avg))
     
     return np.array(points)
@@ -56,6 +57,7 @@ lamp_files.append(('2.10_lamp1_r55cm.csv', 55))
 lamp_files.append(('2.11_lamp1_r60cm.csv', 60))        
 lamp_files.append(('2.12_lamp1_r65cm.csv', 65))
 lamp_files.append(('2.13_lamp1_r70cm.csv', 70))
+
 
 #Check distance law for lamp
 lamp = getAverage(lamp_files)
@@ -80,6 +82,30 @@ flash_model = curve_fit(fit_function, flash[:,0], flash[:,1], p0=[1,1.5])
 
 ################### DATA PLOTTING ############################################
 
+
+# WARM UP
+#lamp
+plt.figure()
+plt.plot(lamp_warmup[:,0], lamp_warmup[:,1], '.', label='Data')
+plt.xlabel('Time $t$ (s)')
+plt.ylabel('EV (lx)')
+plt.title('Lamp Warm-Up')
+plt.legend()
+plt.grid()
+plt.show()
+
+#flashlight
+plt.figure()
+plt.plot(flash_warmup[:,0], flash_warmup[:,1], '.', label='Data')
+plt.xlabel('Time $t$ (s)')
+plt.ylabel('EV (lx)')
+plt.title('Flashlight Warm-Up')
+plt.legend()
+plt.grid()
+plt.show()
+
+
+# DISTANCE LAW
 x1 = np.linspace(10, 70, 100)
 a1 = lamp_model[0][0]
 p1 = lamp_model[0][1]
@@ -112,10 +138,15 @@ plt.show()
 
 ##################### AUFGABE 3 #############################################
 
+# Two Flashlights change l = 0.50 + idx to 170 in line pos = ...
 data = pd.read_csv('Data/81_Data_LightIntensity/4.1_flash12_d40_l50.csv')
 time = data["Time (s)"].values
 lum = data["Illuminance (lx)"].values
 
+# # Only one Flashlight change l=0.60 + idx to 164 in line pos = ...
+# data = pd.read_csv('Data/81_Data_LightIntensity/3.1_flash1_d40_l60.csv')
+# time = data["Time (s)"].values
+# lum = data["Illuminance (lx)"].values
 # time = time[1:] - time[1] #hier einfach die Daten gesliced, damit der Peak in der Mitte vom array ist
 # lum = lum[1:]
 
@@ -139,12 +170,27 @@ for i in range(len(theta2)):
 for i in range(len(theta)):
     ang[len(theta2) + i] = theta[i]
     
+#Calculate Beam width
+halfmax = np.max(lum) / 2
+idx = np.where(halfmax <= lum)[0]
+
+halfwidth = np.array([[ang[idx[0]], halfmax], 
+                      [ang[idx[-1]], halfmax]])
+
+fwhm_ang = np.deg2rad(abs(halfwidth[0,0] - halfwidth[1,0])) #FWHM in angles
+fwhm = np.tan(fwhm_ang) * l
+
 plt.figure()
-plt.plot(ang, lum, '.', label = 'Flashlight')
+plt.plot(ang, lum, 'x', label = 'Flashlight')
+# plt.plot(ang[idx], lum[idx], 'rx', label='Valid Indices')
+# plt.plot(halfwidth[:,0], halfwidth[:,1], 'ro-', label='Full Width at Half Maximum')
 plt.xlabel("Angle in deg")
 plt.ylabel("light intensity in lx")
+plt.title('Combined Flashlight Intensity Pattern')
 plt.legend(loc = 'best')
 plt.grid()
 plt.show()
+
+
 
 
