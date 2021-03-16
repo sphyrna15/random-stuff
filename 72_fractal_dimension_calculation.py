@@ -92,8 +92,7 @@ def sec_radius(filename, N, plot = True):
 
 def density_correlation(filename, Nmax, delta_r = 1, plot = True):
     
-    if Nmax > 9000:
-        Nmax = 9000
+    
     allPoints = getPoints(filename, Nmax)
     N = len(allPoints)
     
@@ -104,12 +103,9 @@ def density_correlation(filename, Nmax, delta_r = 1, plot = True):
     _, _, radius = sec.make_circle(allPoints)
     for h in range(25):
         r = radius / 10 + h*1
-        print(r)
         for i in range(N):
-            for j in range(i):
-                check = np.linalg.norm(points[i,:] - points[j,:]) - r
-                if -delta_r / 2 < check < delta_r / 2:
-                    c += 1.0
+             distances = np.linalg.norm(points - points[i])
+             c += len(distances[- delta_r / 2 < distances - r < delta_r / 2])
         C = c / (N*4*np.pi*r*delta_r)
         correlations.append((C, r))
             
@@ -127,49 +123,6 @@ def density_correlation(filename, Nmax, delta_r = 1, plot = True):
         plt.title('LogLog fit to DAC data')
         plt.xlabel("Length of Radius")
         plt.ylabel("Value of C(r)")
-        plt.legend() 
-        plt.grid()
-        plt.show()
-    
-    return fractDim, correlations, model
-
-
-#### Other implementation
-def density_correlation2(filename, Nmax, delta_r = 1, plot = True):
-    
-    allPoints = getPoints(filename, Nmax)
-    N = len(allPoints)
-    
-    correlations = []
-    points = np.array(allPoints)
-    _, _, radius = sec.make_circle(allPoints)
-    R = np.linspace(radius/4, radius/2, 15)
-    cluster = allPoints
-    
-    for r in R:
-        print(r)
-        cluster = [(float(x), float(y)) for [x, y] in points]
-        N = len(cluster)
-        c = 0.0
-        for i in range(N):
-            for j in range(i):
-                if -delta_r/2 < (math.sqrt((cluster[i][0]-cluster[j][0])**2+(cluster[i][1]-cluster[j][1])**2) - r) < delta_r/2:
-                    c += 1.
-        correlations.append((c/(N*2*math.pi*r*delta_r), r))
-    
-    # Linear Fit    
-    results = np.array(correlations) 
-    x = np.log(results[:,1]) ; y = np.log(results[:,0])
-    model = np.polyfit(x, y, 1)
-    fractDim = model[0] + 2 #Fractal Dimension
-    #print(model[0])
-    if plot:
-        plt.figure()
-        plt.plot(x, y, label='Data')
-        plt.plot(x, model[0]*x + model[1], label='Poly Fit')
-        plt.title('LogLog fit to DAC data')
-        plt.xlabel("Radius $r$")
-        plt.ylabel("Value of $C(r)$")
         plt.legend() 
         plt.grid()
         plt.show()
@@ -222,35 +175,35 @@ def radius_of_gyration(filename, N, plot = True):
     
 if __name__ == '__main__':
     
-    print('Smallest Enclosing Circle')
-    #Smallest enclosing Circle:
-    sec_results = [("dataset", "fractal dimension")] #results with SEC
-    sec_residuals = []
-    for (filename, N) in cluster_list:
-        D, _, model = sec_radius(filename, N, plot=False)
-        print(filename+ ' done')
-        sec_residuals.append(model[1])
-        sec_results.append((filename, D))
-    
-    # print('---' * 20)
-    # print('Density Auto Correlation')
-    # #Density Auto Correlation
-    # dac_results = [("dataset", "fractal dimension")] #results with radius of gyration
+    # print('Smallest Enclosing Circle')
+    # #Smallest enclosing Circle:
+    # sec_results = [("dataset", "fractal dimension")] #results with SEC
+    # sec_residuals = []
     # for (filename, N) in cluster_list:
-    #     D, _, _ = density_correlation2(filename, N, plot=False)
-    #     print(filename +' done ' + str(D))
-    #     dac_results.append((filename, D))       
+    #     D, _, model = sec_radius(filename, N, plot=False)
+    #     print(filename+ ' done')
+    #     sec_residuals.append(model[1])
+    #     sec_results.append((filename, D))
     
     print('---' * 20)
-    print('Radius of Gyration')
-    #Radius of Gyration
-    rog_results = [("dataset", "fractal dimension")] #results with radius of gyration
-    rog_residuals =[]
+    print('Density Auto Correlation')
+    #Density Auto Correlation
+    dac_results = [("dataset", "fractal dimension")] #results with radius of gyration
     for (filename, N) in cluster_list:
-        D, _, model = radius_of_gyration(filename, N, plot=False)
-        print(filename + ' done')
-        rog_residuals.append(model[1])
-        rog_results.append((filename, D))
+        D, _, _ = density_correlation(filename, N, plot=True)
+        print(filename +' done ' + str(D))
+        dac_results.append((filename, D))       
+    
+    # print('---' * 20)
+    # print('Radius of Gyration')
+    # #Radius of Gyration
+    # rog_results = [("dataset", "fractal dimension")] #results with radius of gyration
+    # rog_residuals =[]
+    # for (filename, N) in cluster_list:
+    #     D, _, model = radius_of_gyration(filename, N, plot=False)
+    #     print(filename + ' done')
+    #     rog_residuals.append(model[1])
+    #     rog_results.append((filename, D))
         
         
         
