@@ -92,20 +92,22 @@ def sec_radius(filename, N, plot = True):
 
 def density_correlation(filename, Nmax, delta_r = 1, plot = True):
     
-    
     allPoints = getPoints(filename, Nmax)
     N = len(allPoints)
-    
     correlations = []
     points = np.array(allPoints)
     
     c = 0.0    
     _, _, radius = sec.make_circle(allPoints)
-    for h in range(25):
-        r = radius / 10 + h*1
+    R = np.linspace(radius/4, radius/2, 15)
+    
+    for r in R:
+        print(r)
         for i in range(N):
-             distances = np.linalg.norm(points - points[i])
-             c += len(distances[- delta_r / 2 < distances - r < delta_r / 2])
+             distances = np.linalg.norm(points - points[i], axis=1)
+             check = distances - r
+             inst = np.logical_and(- delta_r / 2 < check, check < delta_r / 2)
+             c += np.count_nonzero(inst)
         C = c / (N*4*np.pi*r*delta_r)
         correlations.append((C, r))
             
