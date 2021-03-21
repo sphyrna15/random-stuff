@@ -192,10 +192,10 @@ def task2(filename, plot = False, f = [400, 800, 1200, 1600]):
     
     if plot:
         plt.figure()
-        plt.plot(freq_fft_plot[220:1500], amp_fft_plot[220:1500], label = "FFT")
+        plt.plot(freq_fft_plot[:1200], amp_fft_plot[:1200], label = "FFT")
         #plt.plot(freq_fft_plot[:1500], Lorentz(freq_fft_plot, y, a, f, w)[:1500],  label = "fit_lorentz")
-        plt.plot(freq_fft_plot[220:1500], 
-                 M(freq_fft_plot, b0, b, y0, a0, a1, a2, a3, f0, f1, f2, f3, w0, w1, w2, w3)[220:1500], 
+        plt.plot(freq_fft_plot[:1200], 
+                 M(freq_fft_plot, b0, b, y0, a0, a1, a2, a3, f0, f1, f2, f3, w0, w1, w2, w3)[:1200], 
                  'r', label = "fit")
         plt.grid()
         plt.legend(loc ='best')
@@ -219,6 +219,57 @@ model2a = task2(files1a[0], plot=True, f=[400, 750, 1100, 1500])
 #     model = task2(file, plot=True, f=[200, 400, 600, 800])
 #     results2b.append(model)
 
-model2a = task2(files1b[2], plot=True, f=[200, 400, 600, 800])    
+model2a = task2(files1b[2], plot=True, f=[200, 400, 600, 800]) 
+
+#linear fit and error calculation - 
+# input calculated resonance frequencies with respective orders + errors
+def task2c(filename, freq, order, err, plot=False):
+    
+    freq = unumpy.uarray(freq, err)
+    order = np.array(order)
+    
+    freq_nom = unumpy.nominal_values(freq)
+    freq_err = unumpy.std_devs(freq)
+    
+    p1= np.polyfit(order,freq_nom,1)
+    p1_err = np.polyfit(order,freq_err,1)
+    print("Slope")
+    print(p1[0])
+    print("Error")
+    print(p1_err[0])
+    
+    if plot:
+        plt.figure()
+        plt.errorbar(order,freq_nom,freq_err , 0, '.', color = 'red', label="resonance frequencies")
+        plt.plot(order, freq_nom, 'ro')
+        plt.plot(order, np.polyval(p1, order), 'k--' ,label="linear fit")
+        plt.xlabel('order')
+        plt.ylabel('resonance frequency in Hz')
+        plt.title("Resonance Frequencies Linear Fit " + filename)
+        plt.grid(b=True,color='#999999',linestyle='-',alpha=0.3)
+        plt.xticks(np.arange(1, 3, step=1))
+        plt.legend(loc = 'best')
+        plt.show()
+    
+    return p1[0], p1_err[0] #returns slope and error
+
+
+m1, m1_err = task2c(files1a[0], [388.9, 779.5, 1180.5], [1, 2, 3], [0.2, 0.7, 1.4], plot=True)
+m2, m2_err = task2c(files1a[0], [258.9, 616.5], [1, 3], [0.8, 1.4], plot=True)
+
+
+
+L = ufloat(0.43, 0.002)
+
+m1 = ufloat(395.8, 0.6)
+m2 = ufloat(178.8, 0.3)
+v1 = 2*m1*L 
+v2 = 4*m2*L
+
+print(v1)
+print(v2)
+
+    
+    
 
 
