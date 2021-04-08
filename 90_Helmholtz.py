@@ -15,13 +15,13 @@ from uncertainties import unumpy
 ###########################
 
 # Bottle Dimensions with uncertainties
-Lu = ufloat(0.065, 0.003)
+Lu = ufloat(0.065, 0.002)
 Du = ufloat(0.034, 0.001)
 # Bottle dimensions without uncertainties
 L = 0.065
 D = 0.034
 
-mass = np.array([0, 62, 90, 146, 170, 204, 225, 234, 247, 259, 274, 290]) #in gram
+mass = np.array([39, 62, 90, 146, 170, 204, 225, 234, 247, 259, 274, 290]) #in gram
 
 freq = np.array([251.61, 269.53, 281.25, 291.43 , 304.68, 320.73, 
                   328.13, 339.70, 345.84, 351.56, 363.28, 381.0]) #in Hz
@@ -74,7 +74,7 @@ print("---"*15)
 plt.figure()
 plt.plot(V, freq**2, 'ro', label="Data Points")
 plt.plot(V, V*s + const, 'k--', label="Linear Fit")
-plt.plot(V, V*exp + const, 'g--', label="Expected Slope")
+# plt.plot(V, V*exp + const, 'g--', label="Expected Slope")
 plt.ylabel("Resonance Frequency $f^2$")
 plt.xlabel("per Volume $1/V$")
 plt.grid()
@@ -93,6 +93,15 @@ vu = unumpy.sqrt(su * (16*np.pi*(Lu + c*Du/2)) / (Du**2) )
 print("---"*15)
 print("Speed of Sound: "+str(vu))
 print("---"*15)
+
+
+import scipy.stats as stats
+
+a, b = 245, 258
+mu, sigma = 251.61, 5.24
+dist = stats.truncnorm((a - mu) / sigma, (b - mu) / sigma, loc=mu, scale=sigma)
+
+values = dist.rvs(5)
 
 
 
