@@ -42,14 +42,14 @@ def getTemperature(filename, pr = True): #pr print variable
     return T, PSD, freq, sigma, res_freq, data
 
 # IMPORT DATA
-filename1 = "PSD-T-300K-Srate-15000Hz-tmeas-30-ampnoise-false.dat" #task 1 
+filename1 = "/PSD-T-300K-Srate-15000Hz-tmeas-30-ampnoise-false.dat" #task 1 
 T1, PSD1, freq1, sig21, res_freq2, data2 = getTemperature(filename1)
 
 
 plt.figure()
 plt.loglog(freq1, PSD1, label = "PSD-$T=300$K-sRate$=15$kHz-$t=30$s-ampnoise-false")
 plt.xlabel("$f$ (Hz)")
-plt.ylabel("$V_{PSD}$ $(V^2/Hz)$")
+plt.ylabel("$S_x$ $(m^2/Hz)$")
 plt.title("Displacement PSD vs sampled Frequencies")
 plt.legend()
 plt.grid()
@@ -59,6 +59,7 @@ plt.show()
 # =============================================================================
 # Part 2 - varying sampling rate and measurement time
 # =============================================================================
+#%%
 
 files = os.listdir(directory + "/VarySampleRate")
 sRate = np.array([60, 45, 30, 15])
