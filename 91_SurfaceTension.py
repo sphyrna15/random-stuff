@@ -15,13 +15,13 @@ from uncertainties import unumpy
 
 # Olive Oil
 oil_Ds = np.array([24, 25, 27, 26, 25, 26, 25, 27, 26, 25])
-oil_De = np.array([28, 29, 32, 31, 28, 20, 30, 31, 29, 28])
-d_oil = np.array([42, 43, 44, 42, 41, 42, 43, 44, 43, 41])
+oil_De = np.array([28, 29, 32, 31, 28, 30, 30, 31, 29, 28])
+d_oil = np.array([55, 56, 57, 55, 54, 55, 56, 57, 56, 54])
 
 # Water
 water_Ds = np.array([38, 33, 32, 32, 31, 21, 32, 29, 35, 40])
 water_De = np.array([45, 44, 44, 45, 44, 29, 46, 43, 53, 55])
-d_water = np.array([56, 55, 53, 54, 54, 37, 55, 51, 60, 66])
+d_water = np.array([61, 60, 58, 59, 59, 42, 60, 56, 65, 71])
 
 """ Constants """
 
